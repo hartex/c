@@ -77,7 +77,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    output_file(dbfd, header);
+    struct employee_t employees = {0};
+
+    output_file(dbfd, header, &employees);
 
     printf("Newfile: %d \n", newfile);
     printf("Filepath: %s \n", filepath);

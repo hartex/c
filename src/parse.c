@@ -22,7 +22,7 @@ int read_employees(int fd, struct dbheader_t* dbhdr, struct employee_t** employe
 {
 }
 
-int output_file(int fd, struct dbheader_t* dbhdr)
+int output_file(int fd, struct dbheader_t* dbhdr, struct employee_t *employees)
 {
     if (fd < 0)
     {
