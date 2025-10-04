@@ -2,27 +2,17 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
 
 #include "common.h"
 #include "parse.h"
 
-void list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
-{
-}
-
-int add_employee(struct dbheader_t* dbhdr, struct employee_t* employees, char* addstring)
-{
-}
-
 int read_employees(int fd, struct dbheader_t* dbhdr, struct employee_t** employeesOut)
 {
+    return STATUS_SUCCESS;
 }
 
-int output_file(int fd, struct dbheader_t* dbhdr, struct employee_t *employees)
+int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t *employees)
 {
     if (fd < 0)
     {
@@ -35,10 +25,16 @@ int output_file(int fd, struct dbheader_t* dbhdr, struct employee_t *employees)
     dbhdr->version = htons(dbhdr->version);
     lseek(fd, 0, SEEK_SET);
 
-    write(fd, dbhdr, sizeof(struct dbheader_t));
+    if (write(fd, dbhdr, sizeof(struct dbheader_t)) < 0)
+    {
+        printf("Failed to write to a file");
+        perror("write");
+        return STATUS_ERROR;
+    }
+    return STATUS_SUCCESS;
 }
 
-int validate_db_header(int fd, struct dbheader_t** headerOut)
+int validate_db_header(const int fd, struct dbheader_t** headerOut)
 {
     if (fd < 0)
     {
@@ -47,7 +43,7 @@ int validate_db_header(int fd, struct dbheader_t** headerOut)
     }
 
     struct dbheader_t* header = calloc(1, sizeof(struct dbheader_t));
-    if (header == -1)
+    if (header == NULL)
     {
         printf("Malloc failed to create db header\n");
         return STATUS_ERROR;
@@ -95,7 +91,7 @@ int validate_db_header(int fd, struct dbheader_t** headerOut)
 int create_db_header(int fd, struct dbheader_t** headerOut)
 {
     struct dbheader_t* header = calloc(1, sizeof(struct dbheader_t));
-    if (header == -1)
+    if (header == NULL)
     {
         printf("Malloc failed to create db header\n");
         return STATUS_ERROR;
