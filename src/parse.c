@@ -90,6 +90,12 @@ int validate_db_header(const int fd, struct dbheader_t** headerOut)
 
 int create_db_header(struct dbheader_t** headerOut)
 {
+    if (headerOut == NULL)
+    {
+        printf("Null pointer is passed as headerOut\n");
+        return STATUS_ERROR;
+    }
+
     struct dbheader_t* header = calloc(1, sizeof(struct dbheader_t));
     if (header == NULL)
     {
