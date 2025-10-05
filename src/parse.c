@@ -7,8 +7,53 @@
 #include "common.h"
 #include "parse.h"
 
-int read_employees(int fd, struct dbheader_t* dbhdr, struct employee_t** employeesOut)
+#include <string.h>
+
+int read_employees(const int fd, struct dbheader_t* dbhdr, struct employee_t** employeesOut)
 {
+    if (fd < 0)
+    {
+        printf("Got a wrong file descriptor");
+        return STATUS_ERROR;
+    }
+
+    unsigned short count = dbhdr->count;
+
+    struct employee_t* employees = calloc(count, sizeof(struct employee_t));
+    if (employees == NULL)
+    {
+        printf("Malloc failed to create db employee\n");
+        free(employees);
+        return STATUS_ERROR;
+    }
+
+    unsigned long expectedBytes = count * sizeof(struct employee_t);
+    if (read(fd, employees, expectedBytes) != expectedBytes)
+    {
+        printf("Reading of employees from db file was unsuccessful\n");
+        free(employees);
+        return STATUS_ERROR;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        employees[i].hours = ntohl(employees[i].hours);
+    }
+
+    *employeesOut = employees;
+    return STATUS_SUCCESS;
+}
+
+int add_employee(struct dbheader_t* dbhdr, struct employee_t *employees, char *addstring)
+{
+    char *name = strtok(addstring, ",");
+    char *address = strtok(NULL, ",");
+    char *hours = strtok(NULL, ",");
+
+    strncpy(employees[dbhdr->count-1].name, name, sizeof(employees[dbhdr->count-1].name));
+    strncpy(employees[dbhdr->count-1].address, address, sizeof(employees[dbhdr->count-1].address));
+
+    employees[dbhdr->count-1].hours = atoi(hours);
+
     return STATUS_SUCCESS;
 }
 
@@ -19,18 +64,32 @@ int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t *emplo
         printf("Got a wrong file descriptor");
         return STATUS_ERROR;
     }
+    unsigned short employeesCount = dbhdr -> count;
+
     dbhdr->magic = htonl(dbhdr->magic);
-    dbhdr->filesize = htonl(dbhdr->filesize);
+	dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * employeesCount));
     dbhdr->count = htons(dbhdr->count);
     dbhdr->version = htons(dbhdr->version);
     lseek(fd, 0, SEEK_SET);
 
     if (write(fd, dbhdr, sizeof(struct dbheader_t)) < 0)
     {
-        printf("Failed to write to a file");
+        printf("Failed to write header to a file");
         perror("write");
         return STATUS_ERROR;
     }
+
+    for (int i = 0; i < employeesCount; i++)
+    {
+        employees[i].hours = htonl(employees[i].hours);
+        if (write(fd, &employees[i], sizeof(struct employee_t)) < 0)
+        {
+            printf("Failed to write employee %d to a file", i);
+            perror("write");
+            return STATUS_ERROR;
+        }
+    }
+
     return STATUS_SUCCESS;
 }
 

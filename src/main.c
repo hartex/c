@@ -19,8 +19,12 @@ int main(int argc, char* argv[])
     int c;
     bool newfile = false;
     char* filepath = NULL;
+    char* addString = NULL;
+    bool listEmployees = false;
+
     int dbfd = -1;
     struct dbheader_t* header = NULL;
+    struct employee_t* employees = NULL;
 
     while ((c = getopt(argc, argv, "nf:a:l")) != -1)
     {
@@ -31,6 +35,12 @@ int main(int argc, char* argv[])
             break;
         case 'f':
             filepath = optarg;
+            break;
+        case 'a':
+            addString = optarg;
+            break;
+        case 'l':
+            listEmployees = true;
             break;
         case '?':
             printf("Unknown option -%c\n", c);
@@ -77,10 +87,29 @@ int main(int argc, char* argv[])
         }
     }
 
-    struct employee_t employees = {0};
+    if (read_employees(dbfd, header, &employees) != STATUS_SUCCESS)
+    {
+        printf("Failed to read employees\n");
+        return -1;
+    }
 
-    output_file(dbfd, header, &employees);
+    if (addString)
+    {
+        header->count++;
+        employees = realloc(employees, header->count * sizeof(struct dbheader_t));
+        if (employees == NULL)
+        {
+            printf("Realloc failed to allocate memory for new employee\n");
+            free(employees);
+            return -1;
+        }
 
-    printf("Newfile: %d \n", newfile);
-    printf("Filepath: %s \n", filepath);
+        if (add_employee(header, employees, addString) != STATUS_SUCCESS)
+        {
+            printf("Failed to add employee to the list\n");
+            return -1;
+        }
+    }
+
+    output_file(dbfd, header, employees);
 }
