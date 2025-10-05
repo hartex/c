@@ -112,4 +112,6 @@ int main(int argc, char* argv[])
     }
 
     output_file(dbfd, header, employees);
+
+    return 0;
 }
