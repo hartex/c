@@ -43,31 +43,42 @@ int read_employees(const int fd, struct dbheader_t* dbhdr, struct employee_t** e
     return STATUS_SUCCESS;
 }
 
-int add_employee(struct dbheader_t* dbhdr, struct employee_t *employees, char *addstring)
+void list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
 {
-    char *name = strtok(addstring, ",");
-    char *address = strtok(NULL, ",");
-    char *hours = strtok(NULL, ",");
+    for (int i = 0; i < dbhdr->count; i++)
+    {
+        printf("Employee %d\n", i);
+        printf("\tName: %s\n", employees[i].name);
+        printf("\tAddress: %s\n", employees[i].address);
+        printf("\tHours: %d\n", employees[i].hours);
+    }
+}
+
+int add_employee(struct dbheader_t* dbhdr, struct employee_t* employees, char* addstring)
+{
+    char* name = strtok(addstring, ",");
+    char* addr = strtok(NULL, ",");
+    char* hours = strtok(NULL, ",");
 
     strncpy(employees[dbhdr->count-1].name, name, sizeof(employees[dbhdr->count-1].name));
-    strncpy(employees[dbhdr->count-1].address, address, sizeof(employees[dbhdr->count-1].address));
+    strncpy(employees[dbhdr->count-1].address, addr, sizeof(employees[dbhdr->count-1].address));
 
-    employees[dbhdr->count-1].hours = atoi(hours);
+    employees[dbhdr->count - 1].hours = atoi(hours);
 
     return STATUS_SUCCESS;
 }
 
-int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t *employees)
+int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t* employees)
 {
     if (fd < 0)
     {
         printf("Got a wrong file descriptor");
         return STATUS_ERROR;
     }
-    unsigned short employeesCount = dbhdr -> count;
+    unsigned short employeesCount = dbhdr->count;
 
     dbhdr->magic = htonl(dbhdr->magic);
-	dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * employeesCount));
+    dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * employeesCount));
     dbhdr->count = htons(dbhdr->count);
     dbhdr->version = htons(dbhdr->version);
     lseek(fd, 0, SEEK_SET);

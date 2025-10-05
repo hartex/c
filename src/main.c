@@ -16,11 +16,11 @@ void print_usage(char* argv[])
 
 int main(int argc, char* argv[])
 {
-    int c;
-    bool newfile = false;
     char* filepath = NULL;
     char* addString = NULL;
     bool listEmployees = false;
+    bool newfile = false;
+    int c;
 
     int dbfd = -1;
     struct dbheader_t* header = NULL;
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     if (addString)
     {
         header->count++;
-        employees = realloc(employees, header->count * sizeof(struct dbheader_t));
+        employees = realloc(employees, header->count * sizeof(struct employee_t));
         if (employees == NULL)
         {
             printf("Realloc failed to allocate memory for new employee\n");
@@ -109,6 +109,11 @@ int main(int argc, char* argv[])
             printf("Failed to add employee to the list\n");
             return -1;
         }
+    }
+
+    if (listEmployees)
+    {
+        list_employees(header, employees);
     }
 
     output_file(dbfd, header, employees);
