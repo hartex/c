@@ -58,23 +58,35 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
 {
     if (employees == NULL)
     {
-        printf("Null pointer passed a an employees list\n");
+        printf("Null pointer passed as employees list\n");
         return STATUS_ERROR;
     }
 
     if (*employees == NULL)
     {
-        printf("Null pointer passed a an employees list\n");
+        printf("Null pointer passed as employees list\n");
         return STATUS_ERROR;
     }
+
+    dbhdr->count++;
+
+    struct employee_t * new_employees = realloc(*employees, dbhdr->count * sizeof(struct employee_t));
+    if (new_employees == NULL)
+    {
+        printf("Realloc failed to allocate memory for new employee\n");
+        free(new_employees);
+        return STATUS_ERROR;
+    }
+
     char* name = strtok(addstring, ",");
     char* addr = strtok(NULL, ",");
     char* hours = strtok(NULL, ",");
 
-    strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name));
-    strncpy((*employees)[dbhdr->count-1].address, addr, sizeof((*employees)[dbhdr->count-1].address));
+    strncpy(new_employees[dbhdr->count-1].name, name, sizeof(new_employees[dbhdr->count-1].name));
+    strncpy(new_employees[dbhdr->count-1].address, addr, sizeof(new_employees[dbhdr->count-1].address));
 
-    (*employees)[dbhdr->count - 1].hours = atoi(hours);
+    new_employees[dbhdr->count - 1].hours = atoi(hours);
+    *employees = new_employees;
 
     return STATUS_SUCCESS;
 }
