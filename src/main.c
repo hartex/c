@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
             return -1;
         }
 
-        if (add_employee(header, employees, addString) != STATUS_SUCCESS)
+        if (add_employee(header, &employees, addString) != STATUS_SUCCESS)
         {
             printf("Failed to add employee to the list\n");
             return -1;
