@@ -56,6 +56,12 @@ void list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
 {
+    if (dbhdr == NULL)
+    {
+        printf("Null pointer passed as header\n");
+        return STATUS_ERROR;
+    }
+
     if (employees == NULL)
     {
         printf("Null pointer passed as employees list\n");
