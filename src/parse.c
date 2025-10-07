@@ -55,7 +55,7 @@ int read_employees(const int fd, struct dbheader_t* dbhdr, struct employee_t** e
     return STATUS_SUCCESS;
 }
 
-int list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
+int list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
 {
     if (dbhdr == NULL)
     {
@@ -80,45 +80,48 @@ int list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
     return STATUS_SUCCESS;
 }
 
-int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
+int add_employee(struct dbheader_t* dbhdr, struct employee_t** employees, char* addstring)
 {
     if (dbhdr == NULL)
     {
         printf("Null pointer passed as header\n");
         return STATUS_ERROR;
     }
-
     if (addstring == NULL)
     {
         printf("Null pointer passed as addstring\n");
         return STATUS_ERROR;
     }
-
     if (employees == NULL)
     {
         printf("Null pointer passed as employees list\n");
         return STATUS_ERROR;
     }
-
     if (*employees == NULL)
     {
         printf("Null pointer passed as employees list\n");
         return STATUS_ERROR;
     }
 
+    char* name = strtok(addstring, ",");
+    char* addr = strtok(NULL, ",");
+    char* hours = strtok(NULL, ",");
+
+    if (name == NULL || addr == NULL || hours == NULL)
+    {
+        printf("Employee string is in incorrect format\n");
+        return STATUS_ERROR;
+    }
+
     dbhdr->count++;
 
-    struct employee_t * new_employees = realloc(*employees, dbhdr->count * sizeof(struct employee_t));
+    struct employee_t* new_employees = realloc(*employees, dbhdr->count * sizeof(struct employee_t));
     if (new_employees == NULL)
     {
         printf("Realloc failed to allocate memory for new employee\n");
         free(new_employees);
         return STATUS_ERROR;
     }
-
-    char* name = strtok(addstring, ",");
-    char* addr = strtok(NULL, ",");
-    char* hours = strtok(NULL, ",");
 
     strncpy(new_employees[dbhdr->count-1].name, name, sizeof(new_employees[dbhdr->count-1].name));
     strncpy(new_employees[dbhdr->count-1].address, addr, sizeof(new_employees[dbhdr->count-1].address));
