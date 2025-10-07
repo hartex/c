@@ -151,6 +151,7 @@ int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t* emplo
         printf("Got a wrong file descriptor");
         return STATUS_ERROR;
     }
+
     unsigned short employeesCount = dbhdr->count;
 
     dbhdr->magic = htonl(dbhdr->magic);
