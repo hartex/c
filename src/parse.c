@@ -17,6 +17,18 @@ int read_employees(const int fd, struct dbheader_t* dbhdr, struct employee_t** e
         return STATUS_ERROR;
     }
 
+    if (dbhdr == NULL)
+    {
+        printf("Null pointer passed as header\n");
+        return STATUS_ERROR;
+    }
+
+    if (employeesOut == NULL)
+    {
+        printf("Null pointer passed as employees list\n");
+        return STATUS_ERROR;
+    }
+
     unsigned short count = dbhdr->count;
 
     struct employee_t* employees = calloc(count, sizeof(struct employee_t));
@@ -43,8 +55,20 @@ int read_employees(const int fd, struct dbheader_t* dbhdr, struct employee_t** e
     return STATUS_SUCCESS;
 }
 
-void list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
+int list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
 {
+    if (dbhdr == NULL)
+    {
+        printf("Null pointer passed as header\n");
+        return STATUS_ERROR;
+    }
+
+    if (employees == NULL)
+    {
+        printf("Null pointer passed as employees list\n");
+        return STATUS_ERROR;
+    }
+
     for (int i = 0; i < dbhdr->count; i++)
     {
         printf("Employee %d\n", i);
@@ -52,6 +76,8 @@ void list_employees(struct dbheader_t* dbhdr, struct employee_t* employees)
         printf("\tAddress: %s\n", employees[i].address);
         printf("\tHours: %d\n", employees[i].hours);
     }
+
+    return STATUS_SUCCESS;
 }
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
