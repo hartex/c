@@ -131,6 +131,18 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
 
 int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t* employees)
 {
+    if (dbhdr == NULL)
+    {
+        printf("Null pointer passed as header\n");
+        return STATUS_ERROR;
+    }
+
+    if (employees == NULL)
+    {
+        printf("Null pointer passed as employees list\n");
+        return STATUS_ERROR;
+    }
+
     if (fd < 0)
     {
         printf("Got a wrong file descriptor");
@@ -167,6 +179,12 @@ int output_file(const int fd, struct dbheader_t* dbhdr, struct employee_t* emplo
 
 int validate_db_header(const int fd, struct dbheader_t** headerOut)
 {
+    if (headerOut == NULL)
+    {
+        printf("Null pointer is passed as headerOut\n");
+        return STATUS_ERROR;
+    }
+
     if (fd < 0)
     {
         printf("Got a wrong file descriptor");
