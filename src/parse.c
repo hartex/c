@@ -68,7 +68,6 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
         return STATUS_ERROR;
     }
 
-
     if (employees == NULL)
     {
         printf("Null pointer passed as employees list\n");
