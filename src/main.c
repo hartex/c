@@ -95,23 +95,10 @@ int main(int argc, char* argv[])
 
     if (addString)
     {
-        header->count++;
-
-        struct employee_t* new_employees = realloc(employees, header->count * sizeof(struct employee_t));
-        if (new_employees == NULL)
-        {
-            printf("Realloc failed to allocate memory for new employee\n");
-            free(new_employees);
-            return STATUS_ERROR;
-        }
-
-        if (add_employee(header, &new_employees, addString) != STATUS_SUCCESS)
+        if (add_employee(header, &employees, addString) != STATUS_SUCCESS)
         {
             printf("Failed to add employee to the list\n");
             return -1;
-        }else
-        {
-            employees = new_employees;
         }
     }
 
