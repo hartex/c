@@ -21,7 +21,7 @@ int create_db_file(char *filename) {
     fd = open(filename, O_RDWR | O_CREAT, 0644);
     if (fd == -1)
     {
-        //close(fd);
+        close(fd);
         perror("open");
         return STATUS_ERROR;
     }
